@@ -1,0 +1,22 @@
+{
+  "name": "unicode",
+  "version": "1.0.0",
+  "description": "Uber clone task 1.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aditya-06/UNICODE.git"
+  },
+  "author": "Aditya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aditya-06/UNICODE/issues"
+  },
+  "homepage": "https://github.com/Aditya-06/UNICODE#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
