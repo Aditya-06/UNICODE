@@ -8,12 +8,12 @@ router.get("/", (req, res) => {
 
 // ========= REGISTER ROUTE ========
 router.get("/register", (req, res) => {
-    res.send("Welcome to Registration Page");
+    res.render("register")
 });
 
 // ========== LOG_IN PAGE ============
 router.get("/login", (req, res) => {
-    res.send("Welcome to Login Page");
+    res.render("login");
 });
 
 module.exports = router;
