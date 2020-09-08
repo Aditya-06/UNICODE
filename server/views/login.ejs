@@ -3,11 +3,11 @@
 
 <h1>Welcome to Login Page!</h1>
 
-<form>
+<form method="POST" action="/login">
 	<input type="text" name="name" placeholder="name" />
 	<input type="text" name="username" placeholder="username" />
 	<input type="password" name="password" placeholder="password" />
-	<button>Login</button>
+	<button type="submit">Login</button>
 </form>
 
 <%- include("partials/footer") %>

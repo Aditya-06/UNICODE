@@ -4,25 +4,31 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const indexRoutes = require('./routes/index');
-// const db = require('./config/keys').MongoURI;
 
 // setting up express
 const app = express();
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(cors());
+require('dotenv').config();
+
+app.use(express.urlencoded({ extended: true }));
 
 // connecting to MongoDB
 mongoose
-	.connect('mongodb://localhost:27017/yelp_camp', {
+	.connect(process.env.MongoDB_Connection_String, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
+		useCreateIndex: true,
 	})
-	.then(() => console.log('Connected to DB!'))
-	.catch((error) => console.log(error));
+	.then(() => console.log('Connected to Database!'))
+	.catch((err) => console.log(err));
 
 // setting up body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // setting default template engine as ejs (temporary)
 app.set('view engine', 'ejs');

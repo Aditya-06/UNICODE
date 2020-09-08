@@ -9,8 +9,8 @@ module.exports = (passport) => {
 			{
 				// options to use google strategy
 				callbackURL: '/google/redirect',
-				clientID: keys.google.clientID,
-				clientSecret: keys.google.clientSecret,
+				clientID: process.env.Google_ClientID,
+				clientSecret: process.env.Google_ClientSecret,
 			},
 			(accessToken, refreshToken, profile, done) => {
 				console.log('passport callback function fired');
