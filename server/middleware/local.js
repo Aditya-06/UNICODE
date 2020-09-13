@@ -1,6 +1,7 @@
+/*
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
@@ -58,7 +59,8 @@ localMiddleware.userRegistration = async (req, res) => {
 };
 
 localMiddleware.login = (req, res) => {
-	passport.authenticate('local', { session: false }, (err, user) => {
+	// eslint-disable-next-line consistent-return
+	passport.authenticate('local', { session: true }, (err, user) => {
 		const { username, password } = req.body;
 		if (!username || !password) {
 			return res.status(400).json({ error: 'Please Enter All Fields' });
@@ -66,14 +68,15 @@ localMiddleware.login = (req, res) => {
 		if (!user) {
 			return res.status(400).json({ error: 'Incorrect Username/Password' });
 		}
-		req.logIn(user, { session: false }, (error) => {
+		req.logIn(user, { session: true }, (error) => {
 			if (error) {
 				return res.status(400).json({ error: error });
 			}
 			// eslint-disable-next-line no-underscore-dangle
-			const token = jwt.sign({ id: user._id }, process.env.JWT_secret);
-			console.log(token);
-			return res.json({ message: 'User Successfully Logged In!' });
+			// const token = jwt.sign({ id: user._id }, process.env.JWT_secret);
+			// console.log(token);
+			// return res.json({ message: 'User Successfully Logged In!' });
+			return res.redirect('/home');
 		});
 	})(req, res);
 };
@@ -86,11 +89,13 @@ localMiddleware.forwardAuthenticated = (req, res, next) => {
 	return res.redirect('/home');
 };
 
-localMiddleware.isLoggedIn = (req, res, next) => {
+localMiddleware.isLoggedIn = (req, res) => {
 	if (req.isAuthenticated()) {
-		return next();
+		return res.json({ msg: 'Welcome to Special Page!' });
 	}
+	console.log('No User Is Logged In!');
 	return res.redirect('/login');
 };
 
 module.exports = localMiddleware;
+*/
