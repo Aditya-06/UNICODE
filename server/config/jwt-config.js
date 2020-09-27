@@ -86,7 +86,7 @@ jwtConfig.delete = async (req, res) => {
 	}
 };
 
-jwtConfig.isValid = async (req, res) => {
+jwtConfig.isValid = async (req, res, next) => {
 	try {
 		// const authHeader = req.headers.authorization;
 		const token = req.header('x-auth-token');
@@ -108,9 +108,26 @@ jwtConfig.isValid = async (req, res) => {
 			return res.json(false);
 		}
 		// console.log(user.name);
-		return res.json(true);
+		return next();
 	} catch (err) {
 		res.status(500).json({ error: err.message });
+	}
+};
+
+jwtConfig.googleValid = async (req, res, next) => {
+	try {
+		console.log(req.user);
+		const token = jwt.sign({ id: req.user._id }, process.env.JWT_secret);
+		req.body.user = {
+			token: token,
+			user: {
+				id: req.user._id,
+				name: req.user.name,
+			},
+		};
+		return next();
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
 	}
 };
 

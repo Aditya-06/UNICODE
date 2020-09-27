@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 // const session = require('express-session');
-// const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 const indexRoutes = require('./routes/index');
+const requestRoutes = require('./routes/request');
 
 // setting up express
 const app = express();
@@ -22,6 +23,7 @@ mongoose
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useCreateIndex: true,
+		useFindAndModify: false,
 	})
 	.then(() => console.log('Connected to Database!'))
 	.catch((err) => console.log(err));
@@ -39,7 +41,7 @@ app.use(bodyParser.json());
 );
 */
 
-// app.use(cookieParser('secret'));
+app.use(cookieParser());
 // config files
 require('./config/passport-google')(passport);
 // require('./config/passport-local')(passport);
@@ -56,6 +58,7 @@ app.use((req, res, next) => {
 
 // using the routes set up
 app.use(indexRoutes);
+app.use(requestRoutes);
 
 // specifying which port to run on
 const port = process.env.PORT || 5000;
