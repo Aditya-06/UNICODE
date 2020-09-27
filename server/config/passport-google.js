@@ -1,5 +1,4 @@
 const GoogleStrategy = require('passport-google-oauth20');
-
 const User = require('../models/user');
 
 module.exports = (passport) => {
@@ -21,11 +20,12 @@ module.exports = (passport) => {
 					}
 					if (user) {
 						console.log('User Already Exists');
+						done(null, user);
 					}
 					if (!user) {
 						const newUser = new User({
 							name: profile.displayName,
-							email: profile.emails[0].value,
+							username: profile.emails[0].value,
 							googleId: profile.id,
 						});
 						await newUser.save();
@@ -45,5 +45,3 @@ module.exports = (passport) => {
 		});
 	});
 };
-
-// server id: i750EaY3AnB60s1POhgfaPjq

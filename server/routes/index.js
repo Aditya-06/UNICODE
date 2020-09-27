@@ -28,14 +28,20 @@ router.post('/login', jwtConfig.login);
 router.get(
 	'/google',
 	passport.authenticate('google', {
+		session: false,
 		scope: ['profile', 'email'],
 	})
 );
 
 // ======================== GOOGLE CALLBACk ROUTE ======================
-router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-	res.redirect('/home');
-});
+router.get(
+	'/google/redirect',
+	passport.authenticate('google', { session: false }),
+	jwtConfig.googleValid,
+	(req, res) => {
+		return res.redirect('http://localhost:3000/home');
+	}
+);
 
 // ===================== CHECK ====================================
 router.get('/home', auth, async (req, res) => {
@@ -44,7 +50,9 @@ router.get('/home', auth, async (req, res) => {
 	res.json({ message: `Welcome ${loggedUser.name}` });
 });
 
-router.post('/isValid', jwtConfig.isValid);
+router.post('/isValid', jwtConfig.isValid, (req, res) => {
+	res.json(true);
+});
 
 // ============= USER ==================
 router.get('/user', auth, async (req, res) => {
@@ -56,12 +64,37 @@ router.get('/user', auth, async (req, res) => {
 });
 
 // ========================= LOGOUT ====================================
-router.get('/logout', (req, res) => {
+router.get('/user/:id/logout', (req, res) => {
 	console.log(`logging out user: ${req.user}`);
 	req.logOut();
 	console.log(req.session);
 
 	res.json({ msg: 'User Has Been Logged Out!' });
+});
+
+// ========================= USER EDIT ===============================
+router.put('/user/:id/edit', auth, (req, res) => {
+	User.find({ username: req.body.username }, (err, result) => {
+		if (err) {
+			console.log(err);
+			res.json((error) => res.json(error));
+		} else if (result.length === 1) {
+			User.findByIdAndUpdate(
+				req.params.id,
+				{
+					name: req.body.name,
+					usernam: req.body.username,
+				},
+				{ new: true }
+			)
+				.then((editedUser) => {
+					res.json(editedUser);
+				})
+				.catch((eror) => res.json(eror));
+		} else {
+			res.json({ msg: 'User With That Email Already Exists!' });
+		}
+	});
 });
 
 module.exports = router;
