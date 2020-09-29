@@ -7,6 +7,7 @@ const passport = require('passport');
 const cors = require('cors');
 
 const indexRoutes = require('./routes/index');
+const requestRoute = require('./routes/request');
 
 // setting up express
 const app = express();
@@ -56,6 +57,7 @@ app.use((req, res, next) => {
 
 // using the routes set up
 app.use(indexRoutes);
+app.use(requestRoute);
 
 // specifying which port to run on
 const port = process.env.PORT || 5000;

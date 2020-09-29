@@ -64,6 +64,7 @@ router.get('/user/:id/request', auth, (req, res) => {
 		});
 });
 
+// =========================== USER ROUTER ROUTES ============================
 router
 	.route('/user/:id/request/:request_id')
 	// ========================= INFO ABOUT PARTICULAR ROUTE ==================
@@ -138,5 +139,28 @@ router
 			}
 		});
 	});
+
+// ================================= DRIVER REQUEST ROUTE ========================
+router.get('/driver/:id/request/', (req, res) => {
+	let returnRequest;
+	Request.find({ accepted: false })
+		.then((foundRequests) => {
+			if (foundRequests.length > 0) {
+				// only want to show pickup and dropoff if request has beena accepteded
+				returnRequest = foundRequests.map((requests) => {
+					return {
+						time: requests.time,
+						createdBy: requests.createdBy.name,
+					};
+				});
+				return res.json({ sucess: true, requests: returnRequest });
+			}
+			return res.json({ success: true, msg: 'No Pending Requests' });
+		})
+		.catch((err) => {
+			console.log(err);
+			return res.json({ succes: false });
+		});
+});
 
 module.exports = router;
