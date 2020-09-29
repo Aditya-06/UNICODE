@@ -2,7 +2,7 @@
 const express = require('express');
 
 const User = require('../models/user');
-const Request = require('../models/requests');
+const Request = require('../models/request');
 const auth = require('../middleware/jwt');
 
 const router = express();
@@ -64,61 +64,79 @@ router.get('/user/:id/request', auth, (req, res) => {
 		});
 });
 
-// ========================= EDIT REQUESTS =================================
-router.put('/user/:id/request/:request_id', auth, (req, res) => {
-	Request.findById(req.params.request_id, (err, foundRequest) => {
-		if (err || !foundRequest) {
-			console.log(err);
-			res.json('Request Not Found.');
-		}
-		// does the user own the comment
-		// console.log(`Created By id: ${foundRequest.createdBy.id}`);
-		// console.log(`Logged in User ID: ${req.user}`);
-		if (foundRequest.createdBy.id.equals(req.user)) {
-			console.log('ID have Matched');
-			console.log(req.body.pickUpAddress);
-			Request.findByIdAndUpdate(
-				req.params.request_id,
-				{
-					pickUpAddress: req.body.pickUpAddress,
-					dropOffAddress: req.body.dropOffAddress,
-					date: req.body.date,
-				},
-				{ new: true }
-			)
-				.then((updatedReq) => {
-					console.log(updatedReq);
-					res.json({ updated_request: updatedReq });
-				})
-				.catch((error) => res.json(error));
-		} else {
-			res.json({ msg: 'You Do Not Have Permission To Do That!' });
-		}
+router
+	.route('/user/:id/request/:request_id')
+	// ========================= INFO ABOUT PARTICULAR ROUTE ==================
+	.get(auth, (req, res) => {
+		Request.findById(req.params.request_id)
+			.then((foundRequest) => {
+				console.log(foundRequest);
+				if (foundRequest.createdBy.id.equals(req.user._id)) {
+					console.log(req.user);
+					console.log('IDs Have Matched!');
+					return res.json({ success: true, request: foundRequest });
+				}
+				return res.json({ sucess: false, msg: 'Unauthorized' });
+			})
+			.catch((err) => {
+				console.log(err);
+				return res.json({ success: false, error: err });
+			});
+	})
+	// ========================= EDIT REQUESTS =================================
+	.put(auth, (req, res) => {
+		Request.findById(req.params.request_id, (err, foundRequest) => {
+			if (err || !foundRequest) {
+				console.log(err);
+				res.json('Request Not Found.');
+			}
+			// does the user own the request
+			// console.log(`Created By id: ${foundRequest.createdBy.id}`);
+			// console.log(`Logged in User ID: ${req.user}`);
+			if (foundRequest.createdBy.id.equals(req.user._id)) {
+				console.log('ID have Matched');
+				console.log(req.body.pickUpAddress);
+				Request.findByIdAndUpdate(
+					req.params.request_id,
+					{
+						pickUpAddress: req.body.pickUpAddress,
+						dropOffAddress: req.body.dropOffAddress,
+						date: req.body.date,
+					},
+					{ new: true }
+				)
+					.then((updatedReq) => {
+						console.log(updatedReq);
+						res.json({ updated_request: updatedReq });
+					})
+					.catch((error) => res.json(error));
+			} else {
+				res.json({ msg: 'You Do Not Have Permission To Do That!' });
+			}
+		});
+	})
+	// ================================= DELETE REQUEST ============================
+	.delete(auth, (req, res) => {
+		Request.findById(req.params.request_id, (err, foundRequest) => {
+			if (err || !foundRequest) {
+				console.log(err);
+				res.json('Request Not Found.');
+			}
+			// does the user own the comment
+			// console.log(`Created By id: ${foundRequest.createdBy.id}`);
+			// console.log(`Logged in User ID: ${req.user}`);
+			if (foundRequest.createdBy.id.equals(req.user)) {
+				console.log('ID have Matched');
+				console.log(req.body.pickUpAddress);
+				Request.findByIdAndRemove(req.params.request_id)
+					.then(() => {
+						res.json({ mag: 'Request has Been Successfully Deleted' });
+					})
+					.catch((error) => res.json(error));
+			} else {
+				res.json({ msg: 'You Do Not Have Permission To Do That!' });
+			}
+		});
 	});
-});
-
-// ================================= DELETE REQUEST ============================
-router.delete('/user/:id/request/:request_id', auth, (req, res) => {
-	Request.findById(req.params.request_id, (err, foundRequest) => {
-		if (err || !foundRequest) {
-			console.log(err);
-			res.json('Request Not Found.');
-		}
-		// does the user own the comment
-		// console.log(`Created By id: ${foundRequest.createdBy.id}`);
-		// console.log(`Logged in User ID: ${req.user}`);
-		if (foundRequest.createdBy.id.equals(req.user)) {
-			console.log('ID have Matched');
-			console.log(req.body.pickUpAddress);
-			Request.findByIdAndRemove(req.params.request_id)
-				.then(() => {
-					res.json({ mag: 'Request has Been Successfully Deleted' });
-				})
-				.catch((error) => res.json(error));
-		} else {
-			res.json({ msg: 'You Do Not Have Permission To Do That!' });
-		}
-	});
-});
 
 module.exports = router;
