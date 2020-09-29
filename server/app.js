@@ -7,7 +7,6 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 const indexRoutes = require('./routes/index');
-const requestRoutes = require('./routes/request');
 
 // setting up express
 const app = express();
@@ -58,7 +57,6 @@ app.use((req, res, next) => {
 
 // using the routes set up
 app.use(indexRoutes);
-app.use(requestRoutes);
 
 // specifying which port to run on
 const port = process.env.PORT || 5000;
