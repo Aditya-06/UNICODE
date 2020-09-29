@@ -7,10 +7,18 @@ const userSchema = new mongoose.Schema({
 		required: true,
 		unique: true,
 	},
-
 	password: String,
 
 	googleId: String,
+	request: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Request',
+		},
+	],
+	rating: {
+		value: Number,
+	},
 });
 
 module.exports = mongoose.model('User', userSchema);
