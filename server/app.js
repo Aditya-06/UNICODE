@@ -7,7 +7,10 @@ const passport = require('passport');
 const cors = require('cors');
 
 const indexRoutes = require('./routes/index');
-const requestRoute = require('./routes/request');
+const requestRoute = require('./routes/requestRouter');
+const userRoute = require('./routes/userRouter');
+const uploadRoute = require('./routes/uploadRouter');
+const driverrRoute = require('./routes/driverRouter');
 
 // setting up express
 const app = express();
@@ -23,6 +26,7 @@ mongoose
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useCreateIndex: true,
+		useFindAndModify: false,
 	})
 	.then(() => console.log('Connected to Database!'))
 	.catch((err) => console.log(err));
@@ -58,6 +62,9 @@ app.use((req, res, next) => {
 // using the routes set up
 app.use(indexRoutes);
 app.use(requestRoute);
+app.use(userRoute);
+app.use(uploadRoute);
+app.use(driverrRoute);
 
 // specifying which port to run on
 const port = process.env.PORT || 5000;

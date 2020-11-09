@@ -11,37 +11,43 @@ const jwtConfig = {};
 
 jwtConfig.register = async (req, res) => {
 	try {
-		let { username, password, password2, name } = req.body;
+		let { username, password, password2, type, contact, name } = req.body;
 
 		// validate
 
-		if (!username || !password || !password2)
-			return res.status(400).json({ msg: 'Not all fields have been entered.' });
+		if (!username || !password || !password2 || !type || !contact)
+			return res
+				.status(400)
+				.json({ success: false, msg: 'Not all fields have been entered.' });
 		if (password.length < 5)
 			return res
 				.status(400)
 				.json({ msg: 'The password needs to be at least 5 characters long.' });
 		if (password !== password2)
-			return res
-				.status(400)
-				.json({ msg: 'Enter the same password twice for verification.' });
+			return res.status(400).json({
+				success: false,
+				msg: 'Enter the same password twice for verification.',
+			});
 
 		const existingUser = await User.findOne({ username: username });
 		if (existingUser)
-			return res
-				.status(400)
-				.json({ msg: 'An account with this username already exists.' });
+			return res.status(400).json({
+				success: false,
+				msg: 'An account with this username already exists.',
+			});
 
 		const salt = await bcrypt.genSalt();
 		const passwordHash = await bcrypt.hash(password, salt);
 
 		const newUser = new User({
+			name,
 			username,
 			password: passwordHash,
-			name,
+			role: type,
+			contact: contact,
 		});
 		const savedUser = await newUser.save();
-		res.json(savedUser);
+		res.json({ success: true, user: savedUser });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
@@ -49,7 +55,7 @@ jwtConfig.register = async (req, res) => {
 
 jwtConfig.login = async (req, res) => {
 	try {
-		const { username, password } = req.body;
+		const { username, password, type } = req.body;
 
 		// validate
 		if (!username || !password)
@@ -70,6 +76,8 @@ jwtConfig.login = async (req, res) => {
 			user: {
 				id: user._id,
 				name: user.name,
+				type: user.type,
+				role: type,
 			},
 		});
 	} catch (err) {

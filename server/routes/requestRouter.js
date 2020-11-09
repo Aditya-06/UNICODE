@@ -3,6 +3,8 @@ const express = require('express');
 
 const User = require('../models/user');
 const Request = require('../models/request');
+// const Customer = require('../models/customer');
+// const Driver = require('../models/driver');
 const auth = require('../middleware/jwt');
 
 const router = express();
@@ -14,31 +16,38 @@ router.post('/user/:id/request/new', auth, async (req, res) => {
 	User.findOne({ _id: id })
 		.then((foundUser) => {
 			console.log(foundUser.name);
-			const createdBy = {
-				id: foundUser._id,
-				name: foundUser.name,
-			};
-			console.log(createdBy);
-			Request.create({
-				createdBy: createdBy,
-				pickUpAddress: pickUpAddress,
-				dropOffAddress: dropOffAddress,
-				date: date,
-			})
-				.then((request) => {
-					request.save();
-					User.findOneAndUpdate(
-						{ _id: id },
-						{ $push: { request: request._id } },
-						{ new: true }
-					)
-						.then(() => res.json(request))
-						.catch((err) => res.json(err));
+			console.log(foundUser.role);
+			if (foundUser.role.toLowerCase() === 'customer') {
+				const createdBy = {
+					id: foundUser._id,
+					name: foundUser.name,
+				};
+				console.log(createdBy);
+				Request.create({
+					createdBy: createdBy,
+					pickUpAddress: pickUpAddress,
+					dropOffAddress: dropOffAddress,
+					date: date,
 				})
-				.catch((err) => {
-					console.log(err);
-					res.json({ msg: err });
-				});
+					.then((request) => {
+						request.save();
+						User.findOneAndUpdate(
+							{ _id: id },
+							{ $push: { request: request._id } },
+							{ new: true }
+						)
+							.then(() => res.json({ success: true, request: request }))
+							.catch((err) => res.json(err));
+					})
+					.catch((err) => {
+						console.log(err);
+						res.json({ msg: err });
+					});
+			} else {
+				res
+					.status(400)
+					.json({ msg: 'You must a customer to create a request' });
+			}
 		})
 		.catch((err) => {
 			console.log(err);
@@ -52,15 +61,15 @@ router.get('/user/:id/request', auth, (req, res) => {
 		.populate('request')
 		.exec()
 		.then((foundUser) => {
-			console.log('Requets Have Been Sent!');
+			console.log('Customer Has been Found!');
 			res.json({
-				name: foundUser.name,
+				name: foundUser.username,
 				requests: foundUser.request,
 			});
 		})
-		.catch((err) => {
-			console.log(err);
-			res.json({ msg: err });
+		.catch((error) => {
+			console.log(error);
+			res.json(error);
 		});
 });
 
@@ -141,7 +150,7 @@ router
 	});
 
 // ================================= DRIVER REQUEST ROUTE ========================
-router.get('/driver/:id/request/', (req, res) => {
+router.get('/driver/:id/request/', auth, (req, res) => {
 	let returnRequest;
 	Request.find({ accepted: false })
 		.then((foundRequests) => {
@@ -149,8 +158,11 @@ router.get('/driver/:id/request/', (req, res) => {
 				// only want to show pickup and dropoff if request has beena accepteded
 				returnRequest = foundRequests.map((requests) => {
 					return {
+						id: requests._id,
 						time: requests.time,
 						createdBy: requests.createdBy.name,
+						pickUpAddress: requests.pickUpAddress,
+						dropOffAddress: requests.dropOffAddress,
 					};
 				});
 				return res.json({ sucess: true, requests: returnRequest });
@@ -160,6 +172,55 @@ router.get('/driver/:id/request/', (req, res) => {
 		.catch((err) => {
 			console.log(err);
 			return res.json({ succes: false });
+		});
+});
+
+router.post('/driver/:id/request/:request_id', auth, (req, res) => {
+	console.log(req.params.id);
+	User.findOne({ _id: req.user })
+		.then((foundDriver) => {
+			console.log(foundDriver);
+			const acceptedBy = {
+				id: foundDriver._id,
+				name: foundDriver.name,
+			};
+			Request.findByIdAndUpdate(
+				req.params.request_id,
+				{ accepted: true, reqStatus: 'onTheWay', acceptedBy: acceptedBy },
+				{ new: true }
+			)
+				.then((UpdatedRequest) => {
+					User.findByIdAndUpdate(
+						req.params.id,
+						{ request: req.params.request_id },
+						{ new: true }
+					)
+						.populate('request')
+						.exec()
+						.then((updatedDriver) => {
+							console.log('Driver Was Found!');
+							console.log(updatedDriver);
+							res.json({
+								success: true,
+								createdByName: UpdatedRequest.createdBy.name,
+								time: UpdatedRequest.time,
+								pickUpAddress: UpdatedRequest.pickUpAddress,
+								dropOffAddress: UpdatedRequest.dropOffAddress,
+							});
+						})
+						.catch((err) => {
+							console.log(err);
+							res.status(400).json(err);
+						});
+				})
+				.catch((errr) => {
+					console.log(errr);
+					res.status(400).json({ success: false, error: errr });
+				});
+		})
+		.catch((error) => {
+			console.log(error);
+			return res.status(400).json({ success: false, error: error });
 		});
 });
 

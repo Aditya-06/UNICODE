@@ -25,7 +25,7 @@ module.exports = (passport) => {
 					if (!user) {
 						const newUser = new User({
 							name: profile.displayName,
-							email: profile.emails[0].value,
+							username: profile.emails[0].value,
 							googleId: profile.id,
 						});
 						await newUser.save();
