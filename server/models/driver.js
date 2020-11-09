@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const driverSchema = new mongoose.Schema({
-	name: String,
 	rating: {
 		value: Number,
 	},
@@ -14,6 +13,12 @@ const driverSchema = new mongoose.Schema({
 		required: true,
 	},
 	Sex: String,
+	request: {
+		id: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Request',
+		},
+	},
 });
 
 module.exports = mongoose.model('Driver', driverSchema);

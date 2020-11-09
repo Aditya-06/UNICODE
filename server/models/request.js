@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 
+const date = new Date();
+const month = date.getMonth() + 1;
+
 const requestSchema = new mongoose.Schema({
 	time: {
-		type: Date,
-		default: Date.now(),
+		type: String,
+		default: `${date.getFullYear()}-${month}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`,
 	},
 	createdBy: {
 		id: {

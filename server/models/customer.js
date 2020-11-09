@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
-	name: String,
-	city: String,
+	name: {
+		type: String,
+		required: true,
+	},
+	city: {
+		type: String,
+		default: 'Mumbai',
+	},
 	googleId: String,
 	request: [
 		{
