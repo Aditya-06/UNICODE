@@ -1,17 +1,16 @@
 import React from 'react';
-import RegisterForm from './registerForm';
+import LoginForm from './LoginForm';
 import { CssBaseline, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   html: {
-    padding: '1rem',
     height: '100%',
   },
   root: {
-    minHeight: '110vh',
+    minHeight: '100vh',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundImage: `url(${process.env.PUBLIC_URL + '/assets/register.jpg'})`,
+    backgroundImage: `url(${process.env.PUBLIC_URL + '/assets/login.jpg'})`,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     textAlign: 'center',
@@ -30,9 +29,9 @@ const register = () => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <h3 className={classes.title}>Registration Form</h3>
+      <h3 className={classes.title}>Login Form</h3>
       <div className={classes.formComp}>
-        <RegisterForm />
+        <LoginForm />
       </div>
     </div>
   );
