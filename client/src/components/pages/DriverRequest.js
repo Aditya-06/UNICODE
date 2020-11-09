@@ -3,10 +3,9 @@ import { useHistory } from 'react-router-dom';
 import UserContext from '../../context/UserContext.js';
 import Axios from 'axios';
 import { Container } from '@material-ui/core';
-import Requests from './Requests';
-import RequestInfo from './RequestInfo.js';
+import PendingRequest from './PendingRequest';
 
-export default function Request() {
+const DriverRequest = () => {
   const { userData } = useContext(UserContext);
   const history = useHistory();
   let listOfRequests = [];
@@ -14,7 +13,7 @@ export default function Request() {
 
   const displayRequestHandler = async (e) => {
     e.preventDefault();
-    await Axios.get(`http://localhost:5000/user/${userData.user.id}/request`, {
+    await Axios.get(`http://localhost:5000/driver/${userData.user.id}/request`, {
       headers: {
         'x-auth-token': userData.token,
       },
@@ -38,7 +37,7 @@ export default function Request() {
               View Requests
             </button>
 
-            <Requests data={responseData} />
+            <PendingRequest data={responseData} />
           </Container>
         </div>
       ) : (
@@ -47,3 +46,6 @@ export default function Request() {
     </div>
   );
 }
+
+
+export default DriverRequest

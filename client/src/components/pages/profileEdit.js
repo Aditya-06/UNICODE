@@ -15,7 +15,7 @@ export default function ProfileEdit() {
     e.preventDefault();
     const editUser = { name, username };
     await Axios.put(
-      `https://localhost:5000/user/${userData.id}/edit`,
+      `https://localhost:5000/user/${userData.id}`,
       editUser,
       {
         headers: {
@@ -41,6 +41,7 @@ export default function ProfileEdit() {
             >
               <TextField
                 required
+                defaultValue={userData.name}
                 className={classes.formElement}
                 id='outlined-basic'
                 label='Name'
