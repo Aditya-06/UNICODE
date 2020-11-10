@@ -4,12 +4,13 @@ require('dotenv').config();
 module.exports = {
 	db: async () => {
 		try {
-			await mongoose.connect(process.env.MONGODB_URI, {
+			await mongoose.connect(process.env.MongoDB_Connection_String, {
 				useNewUrlParser: true,
 				useUnifiedTopology: true,
 				useFindAndModify: false,
+				useFindAndModify: false,
 			});
-			console.log('db connected');
+			console.log('Connected to Database');
 		} catch (err) {
 			console.log(err);
 		}

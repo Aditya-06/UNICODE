@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable prefer-const */
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -47,9 +46,9 @@ jwtConfig.register = async (req, res) => {
 			contact: contact,
 		});
 		const savedUser = await newUser.save();
-		res.json({ success: true, user: savedUser });
+		return res.json({ success: true, user: savedUser });
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		return res.status(500).json({ error: err.message });
 	}
 };
 
@@ -71,7 +70,7 @@ jwtConfig.login = async (req, res) => {
 		if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials.' });
 
 		const token = jwt.sign({ id: user._id }, process.env.JWT_secret);
-		res.json({
+		return res.json({
 			token,
 			user: {
 				id: user._id,
@@ -81,7 +80,7 @@ jwtConfig.login = async (req, res) => {
 			},
 		});
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		return res.status(500).json({ error: err.message });
 	}
 };
 
@@ -118,7 +117,7 @@ jwtConfig.isValid = async (req, res) => {
 		// console.log(user.name);
 		return res.json(true);
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		return res.status(500).json({ error: err.message });
 	}
 };
 

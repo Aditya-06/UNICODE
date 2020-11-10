@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Uber clone task 1.",
   "main": "app.js",
-  "scripts": {
-    "test": "mocha"
-  },
+  "scripts": { "test": "mocha --timeout 5000" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Aditya-06/UNICODE.git"

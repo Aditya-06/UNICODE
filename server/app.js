@@ -11,25 +11,16 @@ const requestRoute = require('./routes/requestRouter');
 const userRoute = require('./routes/userRouter');
 const uploadRoute = require('./routes/uploadRouter');
 const driverrRoute = require('./routes/driverRouter');
+const dbCon = require('./config/db');
 
 // setting up express
 const app = express();
+dbCon.db();
 app.use(express.json());
 require('dotenv').config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
-
-// connecting to MongoDB
-mongoose
-	.connect(process.env.MongoDB_Connection_String, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-		useCreateIndex: true,
-		useFindAndModify: false,
-	})
-	.then(() => console.log('Connected to Database!'))
-	.catch((err) => console.log(err));
 
 // setting up body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -71,3 +62,5 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
 	console.log(`The uber_clone server is up and running on port ${port}`);
 });
+
+module.exports = app;

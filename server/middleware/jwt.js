@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-// eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
 	try {
 		// const authHeader = req.headers.authorization;
@@ -18,7 +17,7 @@ const auth = (req, res, next) => {
 
 		req.user = verified.id;
 		console.log('User has Been Verified!');
-		next();
+		return next();
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
 	}
